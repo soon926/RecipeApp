@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -52,24 +54,24 @@ fun RecipeDetail(
             TopAppBar(
                 title = { Text("Recipe Details") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                IconButton(onClick = { navController.navigateUp() }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                }
+            }, actions = {
+                IconButton(onClick = {
+                    uiState.recipe?.id?.let { recipeId ->
+                        navController.navigate("addEditRecipe/$recipeId")
                     }
-                }, actions = {
-                    IconButton(onClick = {
-                        uiState.recipe?.id?.let { recipeId ->
-                            navController.navigate("addEditRecipe/$recipeId")
-                        }
-                    }) {
-                        Icon(Icons.Default.Edit, contentDescription = "Edit Recipe")
-                    }
-                    IconButton(onClick = {
-                        viewModel.onDelete()
-                        navController.navigateUp()
-                    }) {
-                        Icon(Icons.Default.Delete, contentDescription = "Delete Recipe")
-                    }
-                })
+                }) {
+                    Icon(Icons.Default.Edit, contentDescription = "Edit Recipe")
+                }
+                IconButton(onClick = {
+                    viewModel.onDelete()
+                    navController.navigateUp()
+                }) {
+                    Icon(Icons.Default.Delete, contentDescription = "Delete Recipe")
+                }
+            })
         }) { innerPadding ->
         if (recipe == null) {
             Column(
@@ -80,10 +82,11 @@ fun RecipeDetail(
                 Text("Recipe Not Found!")
             }
         } else {
-            val recipe: Recipe = recipe!!
+            val recipe: Recipe = recipe
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
+                    .verticalScroll(rememberScrollState())
                     .fillMaxSize()
             ) {
                 if (recipe.imageUri != "" && recipe.imageUri != null) {

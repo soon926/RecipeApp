@@ -13,11 +13,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AddAPhoto
@@ -80,6 +83,7 @@ fun AddEditRecipe(
         })
 
     Scaffold(
+        modifier = modifier.imePadding(),
         topBar = {
             TopAppBar(
                 title = { Text(if (uiState.isEdit) "Edit Recipe" else "Add Recipe") },
@@ -103,7 +107,7 @@ fun AddEditRecipe(
                         onClick = {
                             coroutineScope.launch {
                                 viewModel.saveRecipe()
-                            }.invokeOnCompletion() {
+                            }.invokeOnCompletion {
                                 navController.navigateUp()
                             }
                         },
@@ -128,6 +132,8 @@ fun AddEditRecipe(
             modifier = modifier
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
             if (uiState.imageUri != null) {
                 AsyncImage(
@@ -190,7 +196,7 @@ fun AddEditRecipe(
             )
             Spacer(Modifier.height(4.dp))
             OutlinedTextField(
-                value = uiState.selectedRecipeType ?: "",
+                value = uiState.selectedRecipeType,
                 onValueChange = { },
                 label = { Text("Recipe Type") },
                 readOnly = true,

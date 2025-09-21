@@ -6,12 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.data.Recipe
 import com.example.recipeapp.data.RecipeDatabase
 import com.example.recipeapp.data.RecipeRepository
-import com.example.recipeapp.data.RecipeType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
 
 
 class RecipeViewModel(application: Application) : AndroidViewModel(application) {
@@ -51,11 +51,28 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
+    fun onDelete(recipe: Recipe) {
+        viewModelScope.launch {
+            deleteImage(recipe.imageUri)
+            repo.delete(recipe)
+        }
+    }
+
+    private fun deleteImage(path: String?) {
+        if (path.isNullOrBlank()) return
+        try {
+            val file = File(path)
+            if (file.exists()) file.delete()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
 }
 
 data class RecipeListUiState(
     val recipes: List<Recipe> = emptyList(),
     val recipeTypes: List<String> = emptyList(),
-    val selectedType: String? = "",
+    val selectedType: String? = null,
     val isLoading: Boolean = true
 )

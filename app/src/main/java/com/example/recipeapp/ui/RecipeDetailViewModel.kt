@@ -10,7 +10,6 @@ import com.example.recipeapp.data.RecipeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
@@ -32,17 +31,13 @@ class RecipeDetailViewModel(
         repo = RecipeRepository(recipeDao = recipeDao, context = application)
 
         viewModelScope.launch {
-            val recipe = repo.getRecipeById(recipeId)?.firstOrNull()
-
-            if (recipe != null) {
+            repo.getRecipeById(recipeId).collect { recipe ->
                 _uiState.update {
                     it.copy(
                         recipe = recipe,
                         isLoading = false
                     )
                 }
-            } else {
-
             }
         }
     }
